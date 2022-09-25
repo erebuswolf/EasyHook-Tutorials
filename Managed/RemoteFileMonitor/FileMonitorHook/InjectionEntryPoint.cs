@@ -1,5 +1,6 @@
 ﻿// RemoteFileMonitor (File: FileMonitorHook\InjectionEntryPoint.cs)
 //
+// Copyright (c) 2022 FriendlyFishGamesLLC
 // Copyright (c) 2017 Justin Stenning
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -123,8 +124,7 @@ internal struct XInputGamepad {
     }
 }
 
-namespace FileMonitorHook
-{
+namespace XInputMonitorHook {
     /// <summary>
     /// EasyHook will look for a class implementing <see cref="EasyHook.IEntryPoint"/> during injection. This
     /// becomes the entry point within the target process after injection is complete.

@@ -7,8 +7,8 @@
     <ProjectGuid>{73B2C22B-C020-45B7-BF61-B48F49A2693F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FileMonitorHook</RootNamespace>
-    <AssemblyName>FileMonitorHook</AssemblyName>
+    <RootNamespace>XInputMonitorHook</RootNamespace>
+    <AssemblyName>XInputMonitorHook</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

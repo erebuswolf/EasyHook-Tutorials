@@ -57,9 +57,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FileMonitorHook\FileMonitorHook.csproj">
+    <ProjectReference Include="..\FileMonitorHook\XInputMonitorHook.csproj">
       <Project>{73b2c22b-c020-45b7-bf61-b48f49a2693f}</Project>
-      <Name>FileMonitorHook</Name>
+      <Name>XInputMonitorHook</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

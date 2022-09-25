@@ -1,5 +1,6 @@
 ﻿// RemoteFileMonitor (File: FileMonitorHook\ServerInterface.cs)
 //
+// Copyright (c) 2022 FriendlyFishGamesLLC
 // Copyright (c) 2017 Justin Stenning
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,8 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FileMonitorHook
-{
+namespace XInputMonitorHook {
     /// <summary>
     /// Provides an interface for communicating from the client (target) to the server (injector)
     /// </summary>
@@ -38,7 +38,7 @@ namespace FileMonitorHook
     {
         public void IsInstalled(int clientPID)
         {
-            Console.WriteLine("FileMonitor has injected FileMonitorHook into process {0}.\r\n", clientPID);
+            Console.WriteLine("XInputMonitor has injected XInputMonitorHook into process {0}.\r\n", clientPID);
         }
 
         /// <summary>

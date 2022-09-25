@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMonitor", "FileMonitor\FileMonitor.csproj", "{20B3AA84-9CA7-43E5-B0CD-8DBA5091DF92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMonitorHook", "FileMonitorHook\FileMonitorHook.csproj", "{73B2C22B-C020-45B7-BF61-B48F49A2693F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XInputMonitorHook", "FileMonitorHook\XInputMonitorHook.csproj", "{73B2C22B-C020-45B7-BF61-B48F49A2693F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +24,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BD273901-C019-40E6-A866-5E1491E21847}
 	EndGlobalSection
 EndGlobal

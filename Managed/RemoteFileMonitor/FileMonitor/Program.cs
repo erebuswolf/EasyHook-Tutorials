@@ -1,5 +1,6 @@
 ﻿// RemoteFileMonitor (File: FileMonitor\Program.cs)
 //
+// Copyright (c) 2022 FriendlyFishGamesLLC
 // Copyright (c) 2017 Justin Stenning
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -48,11 +49,11 @@ namespace FileMonitor
             if (targetPID <= 0 && string.IsNullOrEmpty(targetExe))
                 return;
 
-            // Create the IPC server using the FileMonitorIPC.ServiceInterface class as a singleton
-            EasyHook.RemoteHooking.IpcCreateServer<FileMonitorHook.ServerInterface>(ref channelName, System.Runtime.Remoting.WellKnownObjectMode.Singleton);
+            // Create the IPC server using the XInputMonitorIPC.ServiceInterface class as a singleton
+            EasyHook.RemoteHooking.IpcCreateServer<XInputMonitorHook.ServerInterface>(ref channelName, System.Runtime.Remoting.WellKnownObjectMode.Singleton);
 
             // Get the full path to the assembly we want to inject into the target process
-            string injectionLibrary = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "FileMonitorHook.dll");
+            string injectionLibrary = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "XInputMonitorHook.dll");
 
             int sleepTime = 0;
 
@@ -133,12 +134,12 @@ namespace FileMonitor
                 }
                 if (args.Length != 1 || !File.Exists(args[0]))
                 {
-                    Console.WriteLine("Usage: FileMonitor ProcessID");
-                    Console.WriteLine("   or: FileMonitor PathToExecutable");
+                    Console.WriteLine("Usage: XInputMonitor ProcessID");
+                    Console.WriteLine("   or: XInputMonitor PathToExecutable");
                     Console.WriteLine("");
-                    Console.WriteLine("e.g. : FileMonitor 1234");
+                    Console.WriteLine("e.g. : XInputMonitor 1234");
                     Console.WriteLine("          to monitor an existing process with PID 1234");
-                    Console.WriteLine(@"  or : FileMonitor ""C:\Windows\Notepad.exe""");
+                    Console.WriteLine(@"  or : XInputMonitor ""C:\Windows\Notepad.exe""");
                     Console.WriteLine("          create new notepad.exe process using RemoteHooking.CreateAndInject");
                     Console.WriteLine();
                     Console.WriteLine("Enter a process Id or path to executable");
