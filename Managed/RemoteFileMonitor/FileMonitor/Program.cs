@@ -54,6 +54,8 @@ namespace FileMonitor
             // Get the full path to the assembly we want to inject into the target process
             string injectionLibrary = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "FileMonitorHook.dll");
 
+            int sleepTime = 0;
+
             try
             {
                 // Injecting into existing process by Id
@@ -66,8 +68,9 @@ namespace FileMonitor
                         targetPID,          // ID of process to inject into
                         injectionLibrary,   // 32-bit library to inject (if target is 32-bit)
                         injectionLibrary,   // 64-bit library to inject (if target is 64-bit)
-                        channelName         // the parameters to pass into injected library
-                                            // ...
+                        channelName,         // the parameters to pass into injected library
+                        sleepTime          // ...
+
                     );
                 }
                 // Create a new process and then inject into it

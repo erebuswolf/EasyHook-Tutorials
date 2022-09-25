@@ -29,6 +29,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 
 [StructLayout(LayoutKind.Explicit)]
@@ -140,6 +141,8 @@ namespace FileMonitorHook
         /// </summary>
         Queue<string> _messageQueue = new Queue<string>();
 
+        int _sleepTime;
+
         /// <summary>
         /// EasyHook requires a constructor that matches <paramref name="context"/> and any additional parameters as provided
         /// in the original call to <see cref="EasyHook.RemoteHooking.Inject(int, EasyHook.InjectionOptions, string, string, object[])"/>.
@@ -150,7 +153,8 @@ namespace FileMonitorHook
         /// <param name="channelName">The name of the IPC channel</param>
         public InjectionEntryPoint(
             EasyHook.RemoteHooking.IContext context,
-            string channelName)
+            string channelName, 
+            int sleepTime)
         {
             // Connect to server object using provided channel name
             _server = EasyHook.RemoteHooking.IpcConnectClient<ServerInterface>(channelName);
@@ -168,41 +172,24 @@ namespace FileMonitorHook
         /// <param name="channelName">The name of the IPC channel</param>
         public void Run(
             EasyHook.RemoteHooking.IContext context,
-            string channelName)
+            string channelName,
+            int sleepTime)
         {
+            this._sleepTime = sleepTime;
+
             // Injection is now complete and the server interface is connected
             _server.IsInstalled(EasyHook.RemoteHooking.GetCurrentProcessId());
 
             // Install hooks
-            /*
-            // CreateFile https://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx
-            var createFileHook = EasyHook.LocalHook.Create(
-                EasyHook.LocalHook.GetProcAddress("kernel32.dll", "CreateFileW"),
-                new CreateFile_Delegate(CreateFile_Hook),
-                this);
-
-            // ReadFile https://msdn.microsoft.com/en-us/library/windows/desktop/aa365467(v=vs.85).aspx
-            var readFileHook = EasyHook.LocalHook.Create(
-                EasyHook.LocalHook.GetProcAddress("kernel32.dll", "ReadFile"),
-                new ReadFile_Delegate(ReadFile_Hook),
-                this);
-
-            // WriteFile https://msdn.microsoft.com/en-us/library/windows/desktop/aa365747(v=vs.85).aspx
-            var writeFileHook = EasyHook.LocalHook.Create(
-                EasyHook.LocalHook.GetProcAddress("kernel32.dll", "WriteFile"),
-                new WriteFile_Delegate(WriteFile_Hook),
-                this);*/
             var readInputHook = EasyHook.LocalHook.Create(
                EasyHook.LocalHook.GetProcAddress("xinput1_3.dll", "XInputGetState"),
                new XInputGetState_Delegate(XInputGetState_Hook),
                this);
 
-
-
             // Activate hooks on all threads except the current thread
             readInputHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
 
-            _server.ReportMessage("CreateFile, ReadFile and WriteFile hooks installed");
+            _server.ReportMessage("Read Input hooks installed");
 
             // Wake up the process (required if using RemoteHooking.CreateAndInject)
             EasyHook.RemoteHooking.WakeUpProcess();
@@ -261,13 +248,8 @@ namespace FileMonitorHook
         /// <summary>
         /// The CreateFile delegate, this is needed to create a delegate of our hook function <see cref=" XInputGetState_hook(int, ref XInputState )"/>.
         /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="desiredAccess"></param>
-        /// <param name="shareMode"></param>
-        /// <param name="securityAttributes"></param>
-        /// <param name="creationDisposition"></param>
-        /// <param name="flagsAndAttributes"></param>
-        /// <param name="templateFile"></param>
+        /// <param name="dwUserIndex"></param>
+        /// <param name="pState"></param>
         /// <returns></returns>
         [UnmanagedFunctionPointer(CallingConvention.StdCall,
                     CharSet = CharSet.Unicode,
@@ -277,15 +259,10 @@ namespace FileMonitorHook
                     ref XInputState pState);
 
         /// <summary>
-        /// The CreateFile hook function. This will be called instead of the original CreateFile once hooked.
+        /// The XInputGetState hook function. This will be called instead of the original XInputGetState once hooked.
         /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="desiredAccess"></param>
-        /// <param name="shareMode"></param>
-        /// <param name="securityAttributes"></param>
-        /// <param name="creationDisposition"></param>
-        /// <param name="flagsAndAttributes"></param>
-        /// <param name="templateFile"></param>
+        /// <param name="dwUserIndex"></param>
+        /// <param name="pState"></param>
         /// <returns></returns>
         int XInputGetState_Hook(
                     int dwUserIndex,
@@ -297,7 +274,7 @@ namespace FileMonitorHook
 
                         // Add message to send to FileMonitor
                         this._messageQueue.Enqueue(
-                            string.Format("[{0}:{1}]: read input for user ({2})",
+                            string.Format("[{0}:{1}]: XInputGetState call for user ({2})",
                             EasyHook.RemoteHooking.GetCurrentProcessId(),
                             EasyHook.RemoteHooking.GetCurrentThreadId(),
                             user));
@@ -308,9 +285,12 @@ namespace FileMonitorHook
                 // swallow exceptions so that any issues caused by this code do not crash target process
             }
 
+            if (dwUserIndex == 0 && _sleepTime > 0) {
+                Thread.Sleep(_sleepTime);
+            }
+
             // now call the original API...
             return XInputGetState(dwUserIndex, ref pState);
         }
-
     }
 }
