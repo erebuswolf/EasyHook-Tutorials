@@ -143,6 +143,10 @@ namespace XInputMonitorHook {
 
         int _sleepTime;
 
+        int _lastUser;
+
+        EventWaitHandle _waitHandle = new EventWaitHandle(true, EventResetMode.AutoReset);
+
         /// <summary>
         /// EasyHook requires a constructor that matches <paramref name="context"/> and any additional parameters as provided
         /// in the original call to <see cref="EasyHook.RemoteHooking.Inject(int, EasyHook.InjectionOptions, string, string, object[])"/>.
@@ -199,25 +203,13 @@ namespace XInputMonitorHook {
                 // Loop until FileMonitor closes (i.e. IPC fails)
                 while (true)
                 {
-                    System.Threading.Thread.Sleep(500);
-
-                    string[] queued = null;
-
-                    lock (_messageQueue)
-                    {
-                        queued = _messageQueue.ToArray();
-                        _messageQueue.Clear();
+                    _waitHandle.WaitOne();
+                    int user = 0;
+                    lock (this) {
+                        user = _lastUser;
                     }
-
-                    // Send newly monitored file accesses to FileMonitor
-                    if (queued != null && queued.Length > 0)
-                    {
-                        _server.ReportMessages(queued);
-                    }
-                    else
-                    {
-                        _server.Ping();
-                    }
+                    _server.GetInputCallback(user);
+    
                 }
             }
             catch
@@ -268,18 +260,10 @@ namespace XInputMonitorHook {
                     int dwUserIndex,
                     ref XInputState pState) {
             try {
-                lock (this._messageQueue) {
-                    if (this._messageQueue.Count < 1000) {
-                        string user = dwUserIndex.ToString();
-
-                        // Add message to send to FileMonitor
-                        this._messageQueue.Enqueue(
-                            string.Format("[{0}:{1}]: XInputGetState call for user ({2})",
-                            EasyHook.RemoteHooking.GetCurrentProcessId(),
-                            EasyHook.RemoteHooking.GetCurrentThreadId(),
-                            user));
-                    }
+                lock (this) {
+                    _lastUser = dwUserIndex;
                 }
+                _waitHandle.Set();
             }
             catch {
                 // swallow exceptions so that any issues caused by this code do not crash target process

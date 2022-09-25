@@ -45,12 +45,9 @@ namespace XInputMonitorHook {
         /// Output the message to the console.
         /// </summary>
         /// <param name="fileNames"></param>
-        public void ReportMessages(string[] messages)
+        public void GetInputCallback(int user)
         {
-            for (int i = 0; i < messages.Length; i++)
-            {
-                Console.WriteLine(messages[i]);
-            }
+            Console.WriteLine("Queried input for user {0}",user);    
         }
 
         public void ReportMessage(string message)
